@@ -4,6 +4,7 @@
 #include "dx_exception.h"
 #include <Windows.h>
 #include <cstdint>
+#include <direct.h>
 #include "../DirectXTK/Inc/WICTextureLoader.h"
 #include "../DirectXTK/Inc/CommonStates.h"
 
@@ -83,7 +84,6 @@ public:
 		vertexData.SysMemPitch = 0;
 		vertexData.SysMemSlicePitch = 0;
 		throwIfFailed(device->CreateBuffer(&CD3D11_BUFFER_DESC(sizeof(quad), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE), &vertexData, &_quadVertices));
-
 
 		Buffer b = readFileToMemory(L"DrawQuadVS.cso");
 		throwIfFailed(device->CreateVertexShader(b.data.get(), b.size, nullptr, &_vertexShader));

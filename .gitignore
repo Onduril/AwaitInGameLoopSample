@@ -11,3 +11,8 @@
 *.opensdf
 *.sdf
 *.suo
+/src/AwaitInGameLoopSample/Debug
+*.cso
+/src/DirectXTK/Bin/Desktop_2015/Win32
+*.db
+*.opendb

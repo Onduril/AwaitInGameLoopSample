@@ -3,7 +3,7 @@
 #include <experimental\resumable>
 
 // This is the promise that handles the functions needed by the await facility
-// - await_suspend is called when a fiber is being suspended until the coroutine has finished. the resumable_handle object
+// - await_suspend is called when a fiber is being suspended until the coroutine has finished. the coroutine_handle object
 // must be called back to trigger the resume of the fiber
 // - await_resume is called when the suspended fiber has resumed. if the coroutine has produced a result, it must be returned by this method.
 // if an exception must be propagated, it should also be done at this point 
@@ -16,7 +16,7 @@ private:
 	private:
 		T _value;
 		bool _isReady;
-		std::experimental::resumable_handle<> _resumeCB;
+		std::experimental::coroutine_handle<> _resumeCB;
 	public:
 		SharedState() : _isReady(false), _resumeCB(nullptr){}
 		explicit SharedState(const T& value) : _isReady(true), _value(value) {}
@@ -28,7 +28,7 @@ private:
 			return _isReady;
 		}
 
-		void setCallback(const std::experimental::resumable_handle<>& callback) {
+		void setCallback(const std::experimental::coroutine_handle<>& callback) {
 			_resumeCB = callback;
 		}
 		template<typename U>
@@ -48,7 +48,7 @@ public:
 	bool await_ready() const {
 		return _state->ready();
 	}
-	void await_suspend(std::experimental::resumable_handle<> _ResumeCb) {
+	void await_suspend(std::experimental::coroutine_handle<> _ResumeCb) {
 		_state->setCallback(_ResumeCb);
 	}
 	T await_resume() const {
@@ -69,7 +69,7 @@ private:
 	class SharedState {
 	private:
 		bool _isReady;
-		std::experimental::resumable_handle<> _resumeCB;
+		std::experimental::coroutine_handle<> _resumeCB;
 	public:
 		explicit SharedState(bool ready) : _isReady(ready), _resumeCB(nullptr) {}
 
@@ -77,7 +77,7 @@ private:
 			return _isReady;
 		}
 
-		void setCallback(const std::experimental::resumable_handle<>& callback) {
+		void setCallback(const std::experimental::coroutine_handle<>& callback) {
 			_resumeCB = callback;
 		}
 
@@ -102,7 +102,7 @@ public:
 	bool await_ready() const {
 		return _state->ready();
 	}
-	void await_suspend(std::experimental::resumable_handle<> _ResumeCb) {
+	void await_suspend(std::experimental::coroutine_handle<> _ResumeCb) {
 		_state->setCallback(_ResumeCb);
 	}
 	void await_resume() const {
@@ -119,7 +119,7 @@ class GameAwaitableUniquePromise
 private:
 	T _value;
 	bool _isReady;
-	std::experimental::resumable_handle<> _resumeCB;
+	std::experimental::coroutine_handle<> _resumeCB;
 	bool _ranToCompletion;
 
 public:
@@ -141,7 +141,7 @@ public:
 	bool await_ready() {
 		return _isReady;
 	}
-	void await_suspend(std::experimental::resumable_handle<> _ResumeCb) {
+	void await_suspend(std::experimental::coroutine_handle<> _ResumeCb) {
 		_resumeCB = _ResumeCb;
 	}
 	T await_resume() {
@@ -167,7 +167,7 @@ class GameAwaitableUniquePromise<void>
 {
 private:
 	bool _isReady;
-	std::experimental::resumable_handle<> _resumeCB;
+	std::experimental::coroutine_handle<> _resumeCB;
 	bool _ranToCompletion;
 
 public:
@@ -194,7 +194,7 @@ public:
 	bool await_ready() {
 		return _isReady;
 	}
-	void await_suspend(std::experimental::resumable_handle<> _ResumeCb) {
+	void await_suspend(std::experimental::coroutine_handle<> _ResumeCb) {
 		_resumeCB = _ResumeCb;
 	}
 	void await_resume() {
@@ -219,7 +219,7 @@ bool await_ready(GameAwaitableUniquePromise<T>* p) {
 
 
 template<typename T>
-void await_suspend(GameAwaitableUniquePromise<T>* p, std::experimental::resumable_handle<> _ResumeCb) {
+void await_suspend(GameAwaitableUniquePromise<T>* p, std::experimental::coroutine_handle<> _ResumeCb) {
 	return p->await_suspend(_ResumeCb);
 }
 
@@ -239,7 +239,7 @@ namespace std {
 	namespace experimental {
 
 		template <class... _Whatever>
-		struct resumable_traits<NoPromise, _Whatever...> {
+		struct coroutine_traits<NoPromise, _Whatever...> {
 			struct promise_type {
 				
 
@@ -276,7 +276,7 @@ namespace std {
 		};
 
 		template <class TResult, class... _Whatever>
-		struct resumable_traits<GameAwaitableSharedPromise<TResult>, _Whatever...> {
+		struct coroutine_traits<GameAwaitableSharedPromise<TResult>, _Whatever...> {
 			struct promise_type {
 				GameAwaitableSharedPromise<TResult> _MyPromise;
 

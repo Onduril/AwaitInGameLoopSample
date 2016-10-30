@@ -23,13 +23,13 @@ NoPromise gameLogic(Engine* engine) {
 	std::default_random_engine re((unsigned int)(std::chrono::steady_clock::now().time_since_epoch().count()));
 	std::uniform_real_distribution<float> dist(0.0f, 0.7f);
 	while (true) {
-		__await animatedText->fadeIn();
-		__await engine->waitForMouseClick();
+		co_await animatedText->fadeIn();
+		co_await engine->waitForMouseClick();
 
-		__await animatedText->fadeOut();
+		co_await animatedText->fadeOut();
 		engine->changeBackground(DirectX::XMFLOAT4(dist(re), dist(re), dist(re), 1.0f));
 
-		__await engine->waitFor(duration_cast<steady_clock::duration>(.5s));
+		co_await engine->waitFor(duration_cast<steady_clock::duration>(.5s));
 	}
 
 }
